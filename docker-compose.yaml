@@ -1,0 +1,35 @@
+version: "3"
+services:
+  db:
+    image: postgres:latest
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: tech
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: tech
+    volumes:
+      - db-store:/var/lib/postgresql/data
+  server:
+    container_name: server
+    build:
+      dockerfile: .server/app/Dockerfile
+    depends_on:
+      - db
+    ports:
+      - "8080:8080"
+    volumes:
+      - .server/app/src:/app
+  frontend:
+    container_name: frontend
+    build:
+      dockerfile: ./frontend/Dockerfile
+      args:
+        ENVIRONMENT: development
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend/src:/app
+volumes:
+  db-store:
